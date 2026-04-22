@@ -54,7 +54,7 @@ app.get("/auth/:token", (req, res) => {
 
   if (sessions[token]) {
     sessions[token].authenticated = true;
-    io.to(token).emit("auth");
+    io.emit("auth");
   }
 
   res.send("OK");
