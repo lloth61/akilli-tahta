@@ -52,11 +52,13 @@ app.get("/login/:token", (req, res) => {
 app.get("/auth/:token", (req, res) => {
   const token = req.params.token;
 
-  if (sessions[token]) {
-    sessions[token].authenticated = true;
-    io.emit("auth");
-  }
+ if (sessions[token]) {
+  sessions[token].authenticated = true;
 
+  globalAuth = true; // 
+
+  io.emit("auth");
+}
   res.send("OK");
 });
 
@@ -66,7 +68,15 @@ io.on("connection", (socket) => {
   });
 });
 
+// 🔥 BURAYA KOY
+app.get("/status", (req, res) => {
+  res.json({ auth: globalAuth });
+});
+
+// 🔥 EN ALTTA
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log("Çalışıyor:", PORT);
 });
+}););
+
