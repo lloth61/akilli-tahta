@@ -78,5 +78,8 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log("Çalışıyor:", PORT);
 });
-
+app.get("/reset", (req, res) => {
+  globalAuth = false;
+  res.send("reset OK");
+});
 
