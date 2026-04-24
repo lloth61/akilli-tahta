@@ -72,8 +72,15 @@ app.get("/news", async (req, res) => {
   try {
     const puppeteer = require("puppeteer");
 
-    const browser = await puppeteer.launch({
-      args: ["--no-sandbox"]
+  const browser = await puppeteer.launch({
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu"
+  ],
+  headless: "new"
+});
     });
 
     const page = await browser.newPage();
