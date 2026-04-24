@@ -77,4 +77,26 @@ app.get("/reset", (req, res) => {
   globalAuth = false;
   res.send("reset OK");
 });
+app.get("/news", async (req, res) => {
+  try {
+    const axios = require("axios");
+    const cheerio = require("cheerio");
+
+    const url = "https://bakimlioo.meb.k12.tr/icerikler/icerikler/listele_184081_Haberler";
+
+    const response = await axios.get(url);
+    const $ = cheerio.load(response.data);
+
+    let news = [];
+
+    $(".liste-item").each((i, el) => {
+      const title = $(el).find("a").text().trim();
+      if (title) news.push(title);
+    });
+
+    res.json(news.slice(0, 5));
+  } catch (err) {
+    res.json([]);
+  }
+});
 
