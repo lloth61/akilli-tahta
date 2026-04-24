@@ -52,13 +52,8 @@ app.get("/login/:token", (req, res) => {
 app.get("/auth/:token", (req, res) => {
   const token = req.params.token;
 
- if (sessions[token]) {
-  sessions[token].authenticated = true;
-
   globalAuth = true; // 
 
-  io.emit("auth");
-}
   res.send("OK");
 });
 
