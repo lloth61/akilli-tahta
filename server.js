@@ -72,15 +72,13 @@ app.get("/news", async (req, res) => {
   try {
     const puppeteer = require("puppeteer");
 
-  const browser = await puppeteer.launch({
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-gpu"
-  ],
-  headless: "new"
-});
+    const browser = await puppeteer.launch({
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage"
+      ],
+      headless: "new"
     });
 
     const page = await browser.newPage();
@@ -109,7 +107,7 @@ app.get("/news", async (req, res) => {
     res.json(news);
 
   } catch (err) {
-    console.log("PUPPETEER ERROR:", err.message);
+    console.log("NEWS ERROR:", err.message);
     res.json([]);
   }
 });
