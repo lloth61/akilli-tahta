@@ -69,45 +69,11 @@ app.get("/status", (req, res) => {
 });
 
 app.get("/news", async (req, res) => {
-  try {
-    const puppeteer = require("puppeteer");
-
-    const browser = await puppeteer.launch({
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage"
-      ],
-      headless: "new"
-    });
-
-    const page = await browser.newPage();
-
-    await page.goto(
-      "https://bakimlioo.meb.k12.tr/icerikler/icerikler/listele_184081_Haberler",
-      { waitUntil: "networkidle2" }
-    );
-
-    const news = await page.evaluate(() => {
-      const items = [];
-
-      document.querySelectorAll("a").forEach(el => {
-        const text = el.innerText.trim();
-
-        if (text.length > 15 && text.length < 120) {
-          items.push(text);
-        }
-      });
-
-      return [...new Set(items)].slice(0, 5);
-    });
-
-    await browser.close();
-
-    res.json(news);
-
-  } catch (err) {
-    console.log("NEWS ERROR:", err.message);
-    res.json([]);
-  }
+  res.json([
+    "Okulumuzda bilim fuarı yapıldı",
+    "23 Nisan etkinlikleri düzenlendi",
+    "Öğrencilerimiz başarı elde etti",
+    "Yeni dönem hazırlıkları başladı",
+    "Spor müsabakalarında derece alındı"
+  ]);
 });
