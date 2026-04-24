@@ -68,6 +68,11 @@ app.get("/status", (req, res) => {
   res.json({ auth: globalAuth });
 });
 
+app.get("/reset", (req, res) => {
+  globalAuth = false;
+  res.send("reset OK");
+});
+
 app.get("/news", async (req, res) => {
   res.json([
     "Okulumuzda bilim fuarı yapıldı",
