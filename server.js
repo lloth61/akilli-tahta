@@ -73,28 +73,39 @@ app.get("/news", async (req, res) => {
     const axios = require("axios");
     const cheerio = require("cheerio");
 
-    const url = "https://bakimlioo.meb.k12.tr/icerikler/icerikler/listele_184081_Haberler";
+    const response = await axios.get(
+      "https://bakimlioo.meb.k12.tr/icerikler/icerikler/listele_184081_Haberler",
+      {
+        headers: {
+          "User-Agent": "Mozilla/5.0"
+        }
+      }
+    );
 
-    const response = await axios.get(url);
     const $ = cheerio.load(response.data);
 
     let news = [];
 
     $("a").each((i, el) => {
+      const href = $(el).attr("href") || "";
       const text = $(el).text().trim();
 
-      // 🔥 filtre: sadece anlamlı başlıklar
-      if (text.length > 15 && text.length < 120 && !text.includes("http")) {
+      // 🔥 SADECE HABER LINKLERİ
+      if (
+        href.includes("/icerikler/") &&
+        text.length > 10 &&
+        text.length < 120
+      ) {
         news.push(text);
       }
     });
 
-    // tekrarları sil
     news = [...new Set(news)];
 
     res.json(news.slice(0, 5));
+
   } catch (err) {
-    console.log(err);
+    console.log("NEWS ERROR:", err.message);
     res.json([]);
   }
 });
