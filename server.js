@@ -70,36 +70,39 @@ app.get("/status", (req, res) => {
 
 app.get("/news", async (req, res) => {
   try {
-    const axios = require("axios");
-    const cheerio = require("cheerio");
+    const puppeteer = require("puppeteer");
 
-    const response = await axios.get(
-      "https://bakimlioo.meb.k12.tr/icerikler/icerikler/listele_184081_Haberler",
-      {
-        headers: {
-          "User-Agent": "Mozilla/5.0"
-        }
-      }
-    );
-
-    const $ = cheerio.load(response.data);
-
-    let news = [];
-
-    // 🔥 sadece başlık alanlarını yakalamaya çalış
-    $("h3, h4, .title, .card-title").each((i, el) => {
-      const text = $(el).text().trim();
-
-      if (text.length > 10 && text.length < 120) {
-        news.push(text);
-      }
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox"]
     });
 
-    news = [...new Set(news)];
+    const page = await browser.newPage();
 
-    res.json(news.slice(0, 5));
+    await page.goto(
+      "https://bakimlioo.meb.k12.tr/icerikler/icerikler/listele_184081_Haberler",
+      { waitUntil: "networkidle2" }
+    );
+
+    const news = await page.evaluate(() => {
+      const items = [];
+
+      document.querySelectorAll("a").forEach(el => {
+        const text = el.innerText.trim();
+
+        if (text.length > 15 && text.length < 120) {
+          items.push(text);
+        }
+      });
+
+      return [...new Set(items)].slice(0, 5);
+    });
+
+    await browser.close();
+
+    res.json(news);
+
   } catch (err) {
-    console.log("NEWS ERROR:", err.message);
+    console.log("PUPPETEER ERROR:", err.message);
     res.json([]);
   }
 });
