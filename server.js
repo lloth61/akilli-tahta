@@ -86,16 +86,11 @@ app.get("/news", async (req, res) => {
 
     let news = [];
 
-    $("a").each((i, el) => {
-      const href = $(el).attr("href") || "";
+    // 🔥 sadece başlık alanlarını yakalamaya çalış
+    $("h3, h4, .title, .card-title").each((i, el) => {
       const text = $(el).text().trim();
 
-      // 🔥 SADECE HABER LINKLERİ
-      if (
-        href.includes("/icerikler/") &&
-        text.length > 10 &&
-        text.length < 120
-      ) {
+      if (text.length > 10 && text.length < 120) {
         news.push(text);
       }
     });
@@ -103,7 +98,6 @@ app.get("/news", async (req, res) => {
     news = [...new Set(news)];
 
     res.json(news.slice(0, 5));
-
   } catch (err) {
     console.log("NEWS ERROR:", err.message);
     res.json([]);
