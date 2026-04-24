@@ -83,11 +83,14 @@ app.get("/news", async (req, res) => {
     $("a").each((i, el) => {
       const text = $(el).text().trim();
 
-      // filtre (boşları alma)
-      if (text.length > 10 && text.length < 120) {
+      // 🔥 filtre: sadece anlamlı başlıklar
+      if (text.length > 15 && text.length < 120 && !text.includes("http")) {
         news.push(text);
       }
     });
+
+    // tekrarları sil
+    news = [...new Set(news)];
 
     res.json(news.slice(0, 5));
   } catch (err) {
