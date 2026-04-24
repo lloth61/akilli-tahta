@@ -77,3 +77,9 @@ app.get("/news", async (req, res) => {
     "Spor müsabakalarında derece alındı"
   ]);
 });
+// 🔥 EN ALT (ÇOK ÖNEMLİ)
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Çalışıyor:", PORT);
+});
