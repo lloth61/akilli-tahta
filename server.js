@@ -68,15 +68,6 @@ app.get("/status", (req, res) => {
   res.json({ auth: globalAuth });
 });
 
-// 🔥 EN ALTTA
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log("Çalışıyor:", PORT);
-});
-app.get("/reset", (req, res) => {
-  globalAuth = false;
-  res.send("reset OK");
-});
 app.get("/news", async (req, res) => {
   try {
     const axios = require("axios");
@@ -89,14 +80,18 @@ app.get("/news", async (req, res) => {
 
     let news = [];
 
-    $(".liste-item").each((i, el) => {
-      const title = $(el).find("a").text().trim();
-      if (title) news.push(title);
+    $("a").each((i, el) => {
+      const text = $(el).text().trim();
+
+      // filtre (boşları alma)
+      if (text.length > 10 && text.length < 120) {
+        news.push(text);
+      }
     });
 
     res.json(news.slice(0, 5));
   } catch (err) {
+    console.log(err);
     res.json([]);
   }
 });
-
