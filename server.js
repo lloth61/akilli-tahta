@@ -8,14 +8,19 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 let sessions = {};
+let globalAuth = false;
 
-const BASE_URL = process.env.RENDER_EXTERNAL_URL || "http://localhost:3000";
+const BASE_URL =
+  process.env.RENDER_EXTERNAL_URL || "http://localhost:3000";
 
+// Ana sayfa
 app.get("/", async (req, res) => {
   const token = Math.random().toString(36).substring(2, 10);
   sessions[token] = { authenticated: false };
 
-  const qr = await QRCode.toDataURL(`${BASE_URL}/login/${token}`);
+  const qr = await QRCode.toDataURL(
+    `${BASE_URL}/login/${token}`
+  );
 
   res.send(`
     <h1>Akıllı Tahta Giriş</h1>
@@ -28,12 +33,14 @@ app.get("/", async (req, res) => {
       socket.emit("join", "${token}");
 
       socket.on("auth", () => {
-        document.body.innerHTML = "<h1>Giriş Başarılı ✅</h1>";
+        document.body.innerHTML =
+          "<h1>Giriş Başarılı ✅</h1>";
       });
     </script>
   `);
 });
 
+// Telefon giriş ekranı
 app.get("/login/:token", (req, res) => {
   const token = req.params.token;
 
@@ -49,31 +56,42 @@ app.get("/login/:token", (req, res) => {
   `);
 });
 
+// Auth
 app.get("/auth/:token", (req, res) => {
   const token = req.params.token;
 
-  globalAuth = true; // 
+  globalAuth = true;
+
+  io.emit("auth");
 
   res.send("OK");
 });
 
+// Socket
 io.on("connection", (socket) => {
   socket.on("join", (token) => {
     socket.join(token);
   });
 });
 
-// 🔥 BURAYA KOY
+// Status (tek kullanımlık true)
 app.get("/status", (req, res) => {
-  res.json({ auth: globalAuth });
+  const authValue = globalAuth;
+  globalAuth = false;
+
+  res.json({
+    auth: authValue
+  });
 });
 
+// Reset
 app.get("/reset", (req, res) => {
   globalAuth = false;
   res.send("reset OK");
 });
 
-app.get("/news", async (req, res) => {
+// Haberler
+app.get("/news", (req, res) => {
   res.json([
     "Okulumuzda bilim fuarı yapıldı",
     "23 Nisan etkinlikleri düzenlendi",
@@ -82,9 +100,10 @@ app.get("/news", async (req, res) => {
     "Spor müsabakalarında derece alındı"
   ]);
 });
-// 🔥 EN ALT (ÇOK ÖNEMLİ)
+
+// Çalıştır
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log("Çalışıyor:", PORT);
 });
